@@ -8,8 +8,10 @@ type Coordinates = {
 
 export default function Home() {
   const [coords, setCoords] = useState<Coordinates>({ latitude: 0, longitude: 0 });
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const getCurrentPosition = () => {
+    setIsLoading(true);
     if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition(function(position) {
         const latitude = position.coords.latitude;
@@ -19,11 +21,19 @@ export default function Home() {
     } else {
       alert("Geolocation not supported")
     }
+    setIsLoading(false);
   }
 
   useEffect(() => {
     getCurrentPosition();
   }, []);
+
+  const handleClick = () => {
+    setIsLoading(true);
+    setTimeout(() => {
+      getCurrentPosition();
+    }, 2500);
+  }
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-start pt-24 p-10 md:p-24 gap-10">
@@ -41,7 +51,7 @@ export default function Home() {
           <h3 className="text-lg">Latitude: <small>{coords.latitude}</small></h3>
           <h3 className="text-lg">Longitude: <small>{coords.longitude}</small></h3>
         </div>
-        <button onClick={getCurrentPosition}>Reload</button>
+        <button className='m-5 bg-slate-900 text-white rounded-full' onClick={handleClick} disabled={isLoading}>{isLoading ? "Loading..." : "Reload"}</button>
       </div>
 
     </main>
